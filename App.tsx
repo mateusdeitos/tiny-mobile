@@ -1,21 +1,20 @@
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { CustomDrawer } from './components/Drawer';
+import { theme } from './styles/theme';
+import { ScreenListProvider } from './contexts/useScreenList';
+import { OfflineModeProvider } from './contexts/useOfflineMode';
 
 export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+	return (
+		<OfflineModeProvider>
+			<ScreenListProvider>
+				<NavigationContainer theme={theme}>
+					<CustomDrawer />
+				</NavigationContainer>
+			</ScreenListProvider>
+		</OfflineModeProvider>
+
+	);
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
