@@ -7,6 +7,8 @@ import { useOfflineMode } from "./useOfflineMode";
 import { FontAwesomeIcon } from "../components/FontAwesomeIcon";
 import { CustomTheme } from "../styles/theme";
 import { useTheme } from "@react-navigation/native";
+import { useAuth } from "./useAuth";
+import { Login } from "../screens/Login";
 
 interface Route {
 	name: string;
@@ -29,6 +31,7 @@ interface Screens {
 const ScreenListContext = createContext<Screens>({} as Screens);
 
 export const ScreenListProvider: React.FC = ({ children }) => {
+	const { logoff } = useAuth();
 	const { isOnline, toggleOfflineMode } = useOfflineMode();
 	const theme = useTheme() as CustomTheme;
 	const [state, setState] = useState<Screens>({
@@ -65,6 +68,15 @@ export const ScreenListProvider: React.FC = ({ children }) => {
 						Component: Configuracoes,
 						label: "Configurações",
 						icon: (props) => <FontAwesomeIcon name="cogs" {...props} />
+					}
+				]
+			},
+			{
+				routes: [
+					{
+						name: "Sair",
+						icon: (props) => <FontAwesomeIcon name="sign-out-alt" {...props} />,
+						onPress: logoff,
 					}
 				]
 			}
