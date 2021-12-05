@@ -7,7 +7,7 @@ export const theme = {
 		primary: "#0050dc",
 		icon: {
 			focused: "#0050dc",
-			default: "#aaa",
+			normal: "#aaa",
 			disabled: "#ddd"
 		},
 		headerText: "#fff",
