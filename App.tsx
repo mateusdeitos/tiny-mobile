@@ -7,13 +7,13 @@ import { OfflineModeProvider } from './contexts/useOfflineMode';
 
 export default function App() {
 	return (
-		<OfflineModeProvider>
-			<ScreenListProvider>
-				<NavigationContainer theme={theme}>
+		<NavigationContainer theme={theme}>
+			<OfflineModeProvider>
+				<ScreenListProvider>
 					<CustomDrawer />
-				</NavigationContainer>
-			</ScreenListProvider>
-		</OfflineModeProvider>
+				</ScreenListProvider>
+			</OfflineModeProvider>
+		</NavigationContainer>
 
 	);
 }

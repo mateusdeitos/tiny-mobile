@@ -4,6 +4,9 @@ import { Contatos } from "../screens/Contatos";
 import { Pedidos } from "../screens/Pedidos";
 import { Sincronizacao } from "../screens/Sincronizacao";
 import { useOfflineMode } from "./useOfflineMode";
+import { FontAwesomeIcon } from "../components/FontAwesomeIcon";
+import { CustomTheme } from "../styles/theme";
+import { useTheme } from "@react-navigation/native";
 
 interface Route {
 	name: string;
@@ -26,6 +29,8 @@ interface Screens {
 const ScreenListContext = createContext<Screens>({} as Screens);
 
 export const ScreenListProvider: React.FC = ({ children }) => {
+	const { isOnline, toggleOfflineMode } = useOfflineMode();
+	const theme = useTheme() as CustomTheme;
 	const [state, setState] = useState<Screens>({
 		groups: [
 			{
@@ -34,11 +39,13 @@ export const ScreenListProvider: React.FC = ({ children }) => {
 						name: "Pedidos",
 						Component: Pedidos,
 						label: "Pedidos",
+						icon: (props) => <FontAwesomeIcon name="shopping-cart" {...props} />
 					},
 					{
 						name: "Contatos",
 						Component: Contatos,
 						label: "Contatos",
+						icon: (props) => <FontAwesomeIcon name="users" {...props} />
 					},
 				]
 			},
@@ -47,10 +54,8 @@ export const ScreenListProvider: React.FC = ({ children }) => {
 					{
 						name: "Sincronização",
 						Component: Sincronizacao,
+						icon: (props) => <FontAwesomeIcon name="sync-alt" {...props} />
 					},
-					{
-						name: "offline_switch",
-					}
 				]
 			},
 			{
@@ -58,32 +63,55 @@ export const ScreenListProvider: React.FC = ({ children }) => {
 					{
 						name: "Configurações",
 						Component: Configuracoes,
-						label: "Configurações"
+						label: "Configurações",
+						icon: (props) => <FontAwesomeIcon name="cogs" {...props} />
 					}
 				]
 			}
 		]
 	});
-	const { isOnline, toggleOfflineMode } = useOfflineMode();
+
+	const removeElement = (route: Route) => {
+		setState({
+			...state,
+			groups: state.groups.map(group => ({
+				...group,
+				routes: group.routes.filter(r => r.name !== route.name)
+			}))
+		});
+	}
+
+	const addElement = (route: Route, after: string) => {
+		const groupIndex = state.groups.findIndex(group => group.routes.find(r => r.name === after));
+		if (groupIndex >= 0) {
+			const newGroup = {
+				...state.groups[groupIndex],
+				routes: [
+					...state.groups[groupIndex].routes.filter(r => r.name !== route.name),
+					route
+				]
+			};
+			const newGroups = [
+				...state.groups.slice(0, groupIndex),
+				newGroup,
+				...state.groups.slice(groupIndex + 1)
+			];
+			setState({
+				...state,
+				groups: newGroups
+			});
+		}
+	}
 
 	useEffect(() => {
-		setState((state) => ({
-			...state,
-			groups: state.groups.map((group) => ({
-				...group,
-				routes: group.routes.map((route) => {
-					if (!(route.name === 'offline_switch')) {
-						return route;
-					}
-
-					return {
-						...route,
-						onPress: toggleOfflineMode,
-						label: isOnline ? 'Ficar Offline' : 'Ficar Online'
-					}
-				})
-			}))
-		}));
+		const route: Route = {
+			name: "offline_switch",
+			onPress: toggleOfflineMode,
+			label: isOnline ? "Ficar Offline" : "Ficar Online",
+			icon: (props) => <FontAwesomeIcon name="cloud"  {...props} color={isOnline ? theme.colors.icon.focused : theme.colors.icon.disabled} />
+		};
+		removeElement(route);
+		addElement(route, "Sincronização");
 	}, [isOnline]);
 
 	return <ScreenListContext.Provider value={state}>
