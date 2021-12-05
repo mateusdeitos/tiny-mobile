@@ -82,10 +82,10 @@ const Component = (props: DrawerContentComponentProps) => {
 						focused: isFocused(name),
 					};
 
-					return <>
+					return <React.Fragment key={name}>
 						<DrawerItem {...props} />
 						{isLastRouteOfGroup && !isLastGroup && <Divider />}
-					</>
+					</React.Fragment>
 				})
 			}
 			)}
